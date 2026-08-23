@@ -19,19 +19,28 @@ def calculate_manual_link_ratios(triangle_df):
     # Drop the last period as it cannot be developed further
     return link_ratios.dropna()
 
-def calculate_reserves(dataset_name="genins"):
-    """Loads claims data, fits a Mack Chainladder model, and returns a summary."""
-    # Load data
-    triangle = cl.load_sample(dataset_name)
+def calculate_reserves(csv_filepath="dummy_claims.csv"):
+    """Loads raw claims data from a CSV, builds a triangle, and fits the Mack model."""
+    # 1. Ingest the raw data 
+    raw_data = pd.read_csv(csv_filepath)
     
-    # Fit model using MackChainladder to generate the summary statistics
+    # 2. Convert the raw flat file into an actuarial Triangle object
+    triangle = cl.Triangle(
+        raw_data, 
+        origin='AccidentYear', 
+        development='DevelopmentYear', 
+        columns='IncrementalPaid',
+        cumulative=False
+    )
+    
+    # 3. Fit the model to generate the summary statistics
     model = cl.MackChainladder().fit(triangle)
     
     # Return both the raw triangle DataFrame and the summary dataframe
     return triangle.to_frame(), model.summary_.to_frame()
 
 if __name__ == "__main__":
-    print("Calculating reserves...\n")
+    print("Ingesting CSV and calculating reserves...\n")
     
     # Get the data
     raw_triangle, results = calculate_reserves()
