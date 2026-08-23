@@ -13,6 +13,7 @@ This repository demonstrates a programmatic approach to casualty actuarial reser
 ## Installation and Setup
 
 1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/GiorgosChar01/Chainladder-Reserving-Model.git](https://github.com/GiorgosChar01/Chainladder-Reserving-Model.git)
-   cd Chainladder-Reserving-Model
+```bash
+git clone https://github.com/GiorgosChar01/Chainladder-Reserving-Model.git
+cd Chainladder-Reserving-Model
+python chainladder_model.py
