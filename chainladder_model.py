@@ -27,6 +27,10 @@ def calculate_reserves(csv_filepath="dummy_claims.csv"):
     # 1. Ingest the raw data 
     raw_data = pd.read_csv(csv_filepath)
     
+    # --- FIX: Convert plain numbers into Date objects for the chainladder library ---
+    raw_data['AccidentYear'] = pd.to_datetime(raw_data['AccidentYear'].astype(str), format='%Y')
+    raw_data['DevelopmentYear'] = pd.to_datetime(raw_data['DevelopmentYear'].astype(str), format='%Y')
+    
     # 2. Convert the raw flat file into an actuarial Triangle object
     triangle = cl.Triangle(
         raw_data, 
