@@ -17,3 +17,16 @@ This repository demonstrates a programmatic approach to casualty actuarial reser
 git clone https://github.com/GiorgosChar01/Chainladder-Reserving-Model.git
 cd Chainladder-Reserving-Model
 python chainladder_model.py
+
+## Model Output 
+
+When the model is run, it successfully projects the Ultimate reserves and calculates the IBNR (Incurred But Not Reported) for each accident year. 
+
+Here is a sample of the summary output:
+
+| Accident Year | Latest Paid | IBNR | Ultimate |
+| :--- | :--- | :--- | :--- |
+| **2021** | 1,650 | 0 | 1,650 |
+| **2022** | 1,650 | 165 | 1,815 |
+| **2023** | 1,200 | 900 | 2,100 |
+| **Total** | **4,500** | **1,065** | **5,565** |
