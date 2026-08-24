@@ -9,9 +9,12 @@ def calculate_manual_link_ratios(triangle_df):
     # Shift the triangle to align development periods for division
     shifted_triangle = triangle_df.shift(-1, axis=1)
     
-    # Calculate the sum of claims for period j and period j+1 (dropping NAs)
-    sum_j = triangle_df.sum(skipna=True)
-    sum_j_plus_1 = shifted_triangle.sum(skipna=True)
+    # Create a mask to only keep rows where the NEXT period actually has data
+    valid_rows = shifted_triangle.notna()
+    
+    # Calculate the sums using ONLY the matching data pairs
+    sum_j = triangle_df[valid_rows].sum()
+    sum_j_plus_1 = shifted_triangle[valid_rows].sum()
     
     # Calculate the volume-weighted link ratios (f_j)
     link_ratios = sum_j_plus_1 / sum_j
