@@ -24,27 +24,42 @@ def calculate_manual_link_ratios(triangle_df):
 
 def calculate_reserves(csv_filepath="dummy_claims.csv"):
     """Loads raw claims data from a CSV, builds a triangle, and fits the Mack model."""
-    # 1. Ingest the raw data 
+    # 1. Ingest the raw data
     raw_data = pd.read_csv(csv_filepath)
-    
-    # --- FIX: Convert ONLY AccidentYear into a Date object ---
+
+    # --- FIX: chainladder's Triangle requires a genuine date-like development
+    # vector, not a bare integer lag (1, 2, 3...). Passing DevelopmentYear
+    # straight through raises "Development lags could not be determined."
+    # Build a real evaluation date: AccidentYear + (DevelopmentYear - 1),
+    # valued at year end.
     raw_data['AccidentYear'] = pd.to_datetime(raw_data['AccidentYear'].astype(str), format='%Y')
-    # We leave DevelopmentYear alone because it represents numerical lags (e.g., 1, 2, 3)!
-    
+    raw_data['DevelopmentDate'] = raw_data.apply(
+        lambda r: pd.Timestamp(year=r['AccidentYear'].year + r['DevelopmentYear'] - 1, month=12, day=31),
+        axis=1
+    )
+
     # 2. Convert the raw flat file into an actuarial Triangle object
     triangle = cl.Triangle(
-        raw_data, 
-        origin='AccidentYear', 
-        development='DevelopmentYear', 
+        raw_data,
+        origin='AccidentYear',
+        development='DevelopmentDate',
         columns='IncrementalPaid',
         cumulative=False
     )
-    
+
+    # --- FIX: the triangle above is still INCREMENTAL. Feeding it straight
+    # into MackChainladder makes the model treat each incremental cell as if
+    # it were the cumulative-to-date value, which silently corrupts the
+    # "Latest" and "Ultimate" figures. Convert to cumulative first.
+    cumulative_triangle = triangle.incr_to_cum()
+
     # 3. Fit the model to generate the summary statistics
-    model = cl.MackChainladder().fit(triangle)
-    
-    # Return both the raw triangle DataFrame and the summary dataframe
-    return triangle.to_frame(), model.summary_.to_frame()
+    model = cl.MackChainladder().fit(cumulative_triangle)
+
+    # Return the CUMULATIVE triangle DataFrame (calculate_manual_link_ratios
+    # expects cumulative values, matching how it's exercised in test_model.py)
+    # and the summary dataframe.
+    return cumulative_triangle.to_frame(), model.summary_.to_frame()
 
 if __name__ == "__main__":
     print("Ingesting CSV and calculating reserves...\n")
