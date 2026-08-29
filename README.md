@@ -10,12 +10,24 @@ This repository demonstrates a programmatic approach to casualty actuarial reser
 * Isolates IBNR reserves from a standard run-off triangle.
 * Exports actuarial summaries into clean CSV formats for downstream reporting.
 
+## Project Structure
+
+```text
+Chainladder-Reserving-Model/
+├── chainladder_model.py
+├── create_data.py
+├── dummy_claims.csv
+├── requirements.txt
+└── .gitignore
+```
+
 ## Installation and Setup
 
 1. **Clone the repository:**
 ```bash
 git clone https://github.com/GiorgosChar01/Chainladder-Reserving-Model.git
 cd Chainladder-Reserving-Model
+pip install -r requirements.txt
 python chainladder_model.py
 ```
 ## Model Output 
